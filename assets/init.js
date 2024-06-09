@@ -9,6 +9,7 @@ const assetsPath = 'assets/';
 const soundPath = assetsPath + 'sounds/';
 const imgPath = assetsPath + 'images/';
 const pokemonPath = imgPath + 'pokemon/';
+const pokemonMaskPath = assetsPath + 'masks/';
 
 const sounds = {
     start: loadSound(soundPath + 'start.wav'),
@@ -24,6 +25,11 @@ const flappyImg = loadImage(pokemonPath + pokemonSelect + '/0.png');
 const backgroundImg = loadImage(imgPath + '/background.jpg');
 const pipeTopImg = loadImage(imgPath + '/pipe/top.png');
 const pipeBotImg = loadImage(imgPath + '/pipe/bot.png');
+
+const flappyMasks = [
+    loadMask(pokemonMaskPath + pokemonSelect + '/0.json'), 
+    loadMask(pokemonMaskPath + pokemonSelect + '/1.json'), 
+];
 
 
 /* Initialisation des variables */
@@ -58,4 +64,4 @@ let velocity = 0;
 
 
 /* Lancement du jeu */
-init();
+Promise.all(flappyMasks).then(() => { init(); });

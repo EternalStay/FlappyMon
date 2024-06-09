@@ -4,6 +4,18 @@ function loadImage(src) {
     return img;
 }
 
+function loadMask(src) {
+    return new Promise((resolve, reject) => {
+        fetch(src)
+        .then(response => {
+            return response.json();
+        })
+        .then(data => {
+            resolve(data);
+        })
+    });
+}
+
 function loadSound(src) {
     const audio = new Audio();
     audio.src = src;
@@ -56,18 +68,8 @@ function updatePipes() {
                 sounds.score.play();
             }
 
-            // Vérification des collisions avec le tuyau supérieur
-            if (bX + flappyImg.width >= nextPipes[i].x && bX <= nextPipes[i].x + pipeTopImg.width &&
-                bY <= nextPipes[i].y + pipeTopImg.height && bX + flappyImg.width >= nextPipes[i].x &&
-                bX <= nextPipes[i].x + pipeTopImg.width) {
-                sounds.collision.play();
-                gameOverMenu();
-            }
-
-            // Vérification des collisions avec le tuyau inférieur
-            if (bX + flappyImg.width >= nextPipes[i].x && bX <= nextPipes[i].x + pipeBotImg.width &&
-                bY + flappyImg.height >= nextPipes[i].y + constant && bX + flappyImg.width >= nextPipes[i].x &&
-                bX <= nextPipes[i].x + pipeBotImg.width) {
+            // Vérification des collisions avec les tuyaux
+            if ((bX + flappyImg.width >= nextPipes[i].x && bX <= nextPipes[i].x + pipeTopImg.width) && ((bY <= nextPipes[i].y + pipeTopImg.height) || (bY + flappyImg.height >= nextPipes[i].y + constant))) {
                 sounds.collision.play();
                 gameOverMenu();
             }
@@ -135,7 +137,6 @@ function gameOverMenu() {
 // Dessine les éléments
 function draw() {
     if (gameLaunch && !paused && !gameOver) {
-        console.log('A');
         ctx.drawImage(backgroundImg, 0, -200);
         for (let i = 0; i < nextPipes.length; i++) {
             constant = pipeTopImg.height + gap;
