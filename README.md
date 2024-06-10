@@ -7,7 +7,6 @@
 
 ### Mécaniques de base ###
 - Génération des tuyaux depuis la droite // Optimisation à faire
-- Gestion des collisions Flappy avec sol/tuyau // Optimisation à faire
 
 ### Améliorations ###
 - Rendre responsive le jeu (PC, mobile, ...)

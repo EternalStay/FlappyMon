@@ -69,9 +69,14 @@ function updatePipes() {
             }
 
             // Vérification des collisions avec les tuyaux
-            if ((bX + flappyImg.width >= nextPipes[i].x && bX <= nextPipes[i].x + pipeTopImg.width) && ((bY <= nextPipes[i].y + pipeTopImg.height) || (bY + flappyImg.height >= nextPipes[i].y + constant))) {
-                sounds.collision.play();
-                gameOverMenu();
+            if (
+                (bX + flappyImg.width >= nextPipes[i].x && bX <= nextPipes[i].x + pipeTopImg.width) // Vérifie si Flappy traverse un tuyau horizontalement
+                && ((bY <= nextPipes[i].y + pipeTopImg.height) || (bY + flappyImg.height >= nextPipes[i].y + constant)) // Vérifie si Flappu verticalement
+            ) {
+                if (checkCollisions(bX, bY, flappyImg, nextPipes[i], constant)) {
+                    sounds.collision.play();
+                    gameOverMenu();
+                }
             }
 
             // Vérification des collisions avec le sol
@@ -86,6 +91,26 @@ function updatePipes() {
             generatePipes();
         }   
     }
+}
+
+// Vérification si collision entre Flappy et les tuyaux
+function checkCollisions(bX, bY, flappyImg, nextPipes, constant) {
+    let result = false;
+
+    for (x = bX; x < bX + flappyImg.width && !result; x++) {
+        for (y = bY; y < bY + flappyImg.width && !result; y++) {
+            let posX = x - bX;
+            let posY = Math.ceil(y - bY);
+            if ((x >= nextPipes.x && x <= nextPipes.x + pipeTopImg.width) && (y <= nextPipes.y + pipeTopImg.height || y >= nextPipes.y + constant)) {
+                if (flappyMasks[currentFlappyIndex][posY][posX] == 1) {
+                    console.log('Touché en (' + posX + ',' + posY + '), sur l\'image n°' + currentFlappyIndex);
+                    result = true;
+                }
+            }
+        }
+    }
+
+    return result;
 }
 
 // Lancement de la page
@@ -136,28 +161,35 @@ function gameOverMenu() {
 
 // Dessine les éléments
 function draw() {
-    if (gameLaunch && !paused && !gameOver) {
-        ctx.drawImage(backgroundImg, 0, -200);
-        for (let i = 0; i < nextPipes.length; i++) {
-            constant = pipeTopImg.height + gap;
-            ctx.drawImage(pipeTopImg, nextPipes[i].x, nextPipes[i].y);
-            ctx.drawImage(pipeBotImg, nextPipes[i].x, nextPipes[i].y + constant);
-        }
-        ctx.drawImage(flappyImg, bX, bY);
-        velocity += gravity;
-        bY += velocity;
-        if (gravity < initialGravity) {
-            gravity += gravityIncreaseRate;
-        }
-        if (bY < 0) {
-            bY = 0;
-            velocity = 0;
-        }
-        ctx.fillStyle = '#000';
-        ctx.font = '20px Arial';
-        ctx.fillText('Score : ' + score, 10, canvas.height - 20);
+    if (gameLaunch && !paused) {
+        if (!gameOver) {
+            ctx.drawImage(backgroundImg, 0, -200);
 
-        updatePipes();
+            for (let i = 0; i < nextPipes.length; i++) {
+                constant = pipeTopImg.height + gap;
+                ctx.drawImage(pipeTopImg, nextPipes[i].x, nextPipes[i].y);
+                ctx.drawImage(pipeBotImg, nextPipes[i].x, nextPipes[i].y + constant);
+            }
+
+            ctx.drawImage(flappyImg, bX, bY);
+
+            velocity += gravity;
+            bY += velocity;
+            if (gravity < initialGravity) {
+                gravity += gravityIncreaseRate;
+            }
+            if (bY < 0) {
+                bY = 0;
+                velocity = 0;
+            }
+
+            ctx.fillStyle = '#000';
+            ctx.font = '20px Arial';
+            ctx.fillText('Score : ' + score, 10, canvas.height - 20);
+
+            updatePipes();
+        }
+
         animationFrameId = requestAnimationFrame(draw);
     }
 }
@@ -184,7 +216,7 @@ function keyPressed(event) {
             } else {
                 requestAnimationFrame(draw);
             }
-        } else if (!paused && event.key === ' ') {
+        } else if (!paused && !gameOver && event.key === ' ') {
             moveUp();
         }
     }

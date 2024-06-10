@@ -26,7 +26,7 @@ const backgroundImg = loadImage(imgPath + '/background.jpg');
 const pipeTopImg = loadImage(imgPath + '/pipe/top.png');
 const pipeBotImg = loadImage(imgPath + '/pipe/bot.png');
 
-const flappyMasks = [
+let flappyMasks = [
     loadMask(pokemonMaskPath + pokemonSelect + '/0.json'), 
     loadMask(pokemonMaskPath + pokemonSelect + '/1.json'), 
 ];
@@ -50,7 +50,7 @@ let bY = canvas.height / 2 - flappyImg.height;
 
 // Gestion des tuyaux
 let nextPipes = [];
-let gap = flappyImg.height * 3;
+let gap = flappyImg.height * 2.5;
 let constant = pipeTopImg.height + gap;
 
 // Gestion de la gravité
@@ -64,4 +64,7 @@ let velocity = 0;
 
 
 /* Lancement du jeu */
-Promise.all(flappyMasks).then(() => { init(); });
+Promise.all(flappyMasks).then((results) => {
+    flappyMasks = results;
+    init();
+});
