@@ -198,7 +198,13 @@ function draw() {
 
 /* Gestion des évènements */
 
+// Jeu PC
 document.addEventListener('keydown', keyPressed);
+
+// Jeu mobile ou PC
+document.addEventListener('click', screenTouched);
+document.addEventListener('touchstart', startScreenHold);
+document.addEventListener('touchend', stopScreenHold);
 
 function keyPressed(event) {
     if (!gameLaunch) {
@@ -220,5 +226,47 @@ function keyPressed(event) {
             moveUp();
         }
     }
+}
+
+function screenTouched(event) {
+    event.preventDefault();
+    if (!gameLaunch) {
+        gameLaunch = true;
+        sounds.start.play();
+        moveUp();
+        requestAnimationFrame(draw);
+    } else {
+        if (paused) {
+            paused = !paused;
+            requestAnimationFrame(draw);
+        } else if (!paused && !gameOver) {
+            moveUp();
+        }
+    }
+}
+
+function startScreenHold(event) {
+    event.preventDefault();
+    
+    if (touchHoldTimeout || touchHoldInterval) return;
+
+    touchHoldTimeout = setTimeout(() => {
+        touchHoldInterval = setInterval(() => {
+            if (!paused) {
+                paused = !paused;
+                cancelAnimationFrame(animationFrameId);
+            }
+        }, 100);
+    }, 1000);
+}
+
+function stopScreenHold(event) {
+    event.preventDefault();
+
+    clearTimeout(touchHoldTimeout);
+    clearInterval(touchHoldInterval);
+
+    touchHoldTimeout = null;
+    touchHoldInterval = null;
 }
 

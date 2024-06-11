@@ -1,7 +1,8 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
-
+ctx.canvas.width = Math.min(window.innerWidth, 450);
+//ctx.canvas.height = window.innerHeight;
 
 /* Chargement des assets */
 
@@ -35,6 +36,8 @@ let flappyMasks = [
 /* Initialisation des variables */
 
 let animationFrameId;
+let touchHoldTimeout;
+let touchHoldInterval;
 let currentFlappyIndex = 0;
 let gameLaunch = false;
 let gameOver = false;
