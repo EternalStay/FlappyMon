@@ -65,7 +65,7 @@ function displayGameOverPanel() {
     ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
     ctx.fillRect(x, y, rectWidth, rectHeight);
 
-    ctx.fillStyle = '#FFF'; // Couleur du texte
+    ctx.fillStyle = '#FFF';
     ctx.font = '30px Arial';
     const textPadding = 20;
 
@@ -103,6 +103,12 @@ function changeFlappy() {
     }
 
     flappyImg.src = pokemonPath + pokemonSelect + '/' + flappySprites[currentFlappyIndex];
+
+    // A voir si je garde ceci, c'est pour rendre le battement d'ailes plus réaliste...
+    setTimeout(() => {
+        currentFlappyIndex = 0;
+        flappyImg.src = pokemonPath + pokemonSelect + '/' + flappySprites[0];
+    }, 500);
 }
 
 // Fait monter Flappy dans les airs
