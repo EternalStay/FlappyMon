@@ -44,6 +44,7 @@ let gameOver = false;
 let paused = false;
 
 // Points
+let highScores = [];
 let score = 0;
 let coins = 0;
 

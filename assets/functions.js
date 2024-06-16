@@ -23,9 +23,76 @@ function loadSound(src) {
 }
 
 function displayStartMessage() {
-    ctx.fillStyle = '#000';
+    const text = 'Appuie sur Espace pour démarrer le jeu';
     ctx.font = '20px Arial';
-    ctx.fillText('Appuie sur Espace pour démarrer le jeu', canvas.width / 2 - 175, canvas.height / 2);
+
+    const textWidth = ctx.measureText(text).width;
+    const textHeight = 20;
+    const x = canvas.width / 2 - textWidth / 2;
+    const y = canvas.height / 2 - textHeight / 2;
+    const rectWidth = textWidth + 40;
+    const rectHeight = textHeight + 40;
+
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+    ctx.fillRect(x - 20, y - 20, rectWidth, rectHeight - 10);
+    ctx.fillStyle = '#FFF';
+    ctx.fillText(text, x, y + textHeight / 2);
+}
+
+function displayGameOverPanel() {
+    let findNewScore = false;
+
+    if ((highScores.length < 5) || (highScores.length > 0 && highScores[highScores.length - 1] <= score)) {
+        let newHighScores = [];
+        for (i = 0; i < 5; i++) {
+            if ((highScores.length <= i || score >= highScores[i]) && !findNewScore) {
+                newHighScores.push(score);
+                findNewScore = true;
+            } else if (!findNewScore && highScores.length >= i) {
+                newHighScores.push(highScores[i]);
+            } else if (findNewScore && highScores.length >= i) {
+                newHighScores.push(highScores[newHighScores.length - 1]);
+            }
+        }
+        highScores = newHighScores;
+    }
+
+    const rectWidth = canvas.width * 0.8;
+    const rectHeight = canvas.height * 0.5;
+    const x = (canvas.width - rectWidth) / 2;
+    const y = (canvas.height - rectHeight) / 2;
+
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+    ctx.fillRect(x, y, rectWidth, rectHeight);
+
+    ctx.fillStyle = '#FFF'; // Couleur du texte
+    ctx.font = '30px Arial';
+    const textPadding = 20;
+
+    const scoreText = 'Classement';
+    const scoreTextWidth = ctx.measureText(scoreText).width;
+    ctx.fillText(scoreText, canvas.width / 2 - scoreTextWidth / 2, y + textPadding + 30);
+
+    ctx.font = '20px Arial';
+    let findScore = 0;
+    for (let i = 0; i < 5; i++) {
+        if (highScores.length >= i && score == highScores[i] && findScore == 0) {
+            findScore++;
+        }
+        const highScoreText = (findScore == 1 ? '====> ' : '') + '#' + (i + 1) + ' : ' + (i < highScores.length ? highScores[i] : '-') + (findScore == 1 ? ' <====' : '');
+        const highScoreTextWidth = ctx.measureText(highScoreText).width;
+        ctx.fillText(highScoreText, canvas.width / 2 - highScoreTextWidth / 2, y + textPadding + 80 + i * 30);
+        if (findScore == 1) {
+            findScore++;
+        }
+    }
+    if (findScore == 0) {
+        const highScoreText = '====> Score : ' + score + ' <====';
+        ctx.fillText(highScoreText, canvas.width / 2 -  ctx.measureText(highScoreText).width / 2, y + textPadding + 80 + 5.5 * 30);
+    } else {
+        const highScoreText = 'Nouveau score !';
+        ctx.fillText(highScoreText, canvas.width / 2 -  ctx.measureText(highScoreText).width / 2, y + textPadding + 80 + 5.5 * 30);
+    }
 }
 
 // Simule le battement d'ailes de Flappy
@@ -153,10 +220,11 @@ function gameOverMenu() {
     sounds.death.play();
 
     // TODO : Ajouter écran de fin avec score / classement
+    displayGameOverPanel();
 
     setTimeout(() => {
         newGame();
-    }, 2000);
+    }, 5000);
 }
 
 // Dessine les éléments
